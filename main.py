@@ -1,10 +1,37 @@
-import socket
+from DB.DB import RequestDataBase
 from _thread import start_new_thread
+from repository import *
+import socket
+
+try:
+    from http_parser.parser import HttpParser
+except ImportError:
+    from http_parser.pyparser import HttpParser
+
 
 from src import consts
 from src.proxy_http import proxy_http
-from src.proxy_https import proxy_https
-from src.reply import receive_data_from_socket
+from proxy_https import proxy_https
+
+
+def receive_data_from_socket(sock):
+    parser = HttpParser()
+    resp = b''
+    while True:
+        data = sock.recv(consts.BUF_SIZE)
+        if not data:
+            break
+
+        received = len(data)
+        _ = parser.execute(data, received)
+        resp += data
+
+        if parser.is_message_complete():
+            break
+    return resp, parser
+
+
+rep = RequestDataBase()
 
 
 def main():
@@ -15,7 +42,7 @@ def main():
 
     while True:
         try:
-            con, addr = sock.accept()
+            con, _ = sock.accept()
             data, parser = receive_data_from_socket(con)
 
             if parser.get_method() == "CONNECT":

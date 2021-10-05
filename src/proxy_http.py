@@ -3,9 +3,8 @@ import socket
 
 from http_parser.pyparser import HttpParser
 
-from reply import get_reply_from_host
-from repository import *
 from src import consts
+from src.reply import get_reply_from_host
 
 
 def build_http_request_to_host(parser: HttpParser, data: bytes):

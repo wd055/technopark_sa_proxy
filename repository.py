@@ -1,9 +1,9 @@
 import psycopg2
-import config
 
-class RequestDataBase:
+
+class RequestRepository:
     def __init__(self):
-        self.db = psycopg2.connect(f"dbname=proxy_db user={config.DB_USERNAME} password={config.DB_PASSWORD}")
+        self.db = psycopg2.connect("dbname=proxy_db user=postgres password=mac_db")
 
     def insert_request(self, req: str, host: str, tls: int):
         cur = self.db.cursor()
